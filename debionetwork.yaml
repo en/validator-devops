@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: debionetwork-deployment
+  labels:
+    app: debionetwork
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: debionetwork
+  serviceName: "debionetwork"
+  template:
+    metadata:
+      labels:
+        app: debionetwork
+    spec:
+      containers:
+        - name: debionetwork-node
+          image: us-central1-docker.pkg.dev/octopus-prod/octopus-appchains/debio-node@sha256:f6734f7eb2ba1d99bb0c02c3efff86de64b8b25c2e87ee1238b2ad7a7d0b9457
+          securityContext:
+            runAsUser: 0
+          command: ["debio"]
+          args:
+            - "--base-path=/data"
+            - "--chain=octopus-mainnet"
+            - "--rpc-external"
+            - "--rpc-cors=all"
+            - "--rpc-methods=Unsafe"
+            - "--validator"
+            - "--prometheus-external"
+            - "--enable-offchain-indexing=true"
+            - "--telemetry-url=wss://telemetry.testnet.octopus.network/submit 0"
+          env:
+            - name: RUST_LOG
+              value: "beefy"
+          ports:
+            - containerPort: 9933
+              name: http
+            - containerPort: 30333
+              name: p2p
+            - containerPort: 9615
+              name: metrics
+          volumeMounts:
+            - name: data
+              mountPath: /data
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 64Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: debionetwork-service
+  labels:
+    app: debionetwork
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 30333
+    targetPort: 30333
+  selector:
+    app: debionetwork
