@@ -64,5 +64,9 @@ spec:
   ports:
   - port: 30333
     targetPort: 30333
+    name: p2p
+  - port: 9933
+    targetPort: 9933
+    name: http
   selector:
     app: debionetwork
