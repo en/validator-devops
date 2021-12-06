@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: debionetwork-node
-          image: us-central1-docker.pkg.dev/octopus-prod/octopus-appchains/debio-node@sha256:f6734f7eb2ba1d99bb0c02c3efff86de64b8b25c2e87ee1238b2ad7a7d0b9457
+          image: us-central1-docker.pkg.dev/octopus-prod/octopus-appchains/debio-node@sha256:e2de249c3126bb6930851e6e7fcc6053519d60580c5a9e52a0759cbb6fa1032f
           securityContext:
             runAsUser: 0
           command: ["debio"]
